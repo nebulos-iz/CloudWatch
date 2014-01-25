@@ -51,12 +51,12 @@ end
 
 conf = confidences(IX(1))
 figure(1); 
+
 imshow(clouds{IX(1)}); 
 figure(2); 
 imshow(objs{IX(1)}); 
 figure(3); 
 imshow(colors{IX(1)}); 
-
 match = colors{IX(1)}; 
 
 end 

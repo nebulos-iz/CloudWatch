@@ -13,14 +13,13 @@ function centered_img = center(img, x, y)
     end
     %center y
     if (size(img, 1)/2 - y > 0) 
-        %center is too far down; pad on bottom
-        dim = size(img, 1) - y; 
-        pad = zeros([dim - y, size(img, 2), size(img, 3)]); 
-        img = vertcat(img, pad);
+        %center is too far up; pad on top
+        pad = zeros([size(img, 1) - y - y, size(img, 2), size(img, 3)]);  
+        img = vertcat(pad, img);
     else 
-        %center is too high up; pad on top
+        %center is too far down; pad on bottom
         pad = zeros([y - (size(img, 1) - y), size(img, 2), size(img, 3)]); 
-        img = vertcat(pad, img); 
+        img = vertcat(img, pad); 
     end 
     centered_img = img; 
 end
