@@ -1,16 +1,14 @@
 package edu.brown.cs.ajlin.hackatbrown2014;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -23,12 +21,19 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.border.EmptyBorder;
+import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
 
 public class Cloudwatcher extends JFrame {
 	
+	private static final int STAGE_NO_INPUT = 0;
+	private static final int STAGE_NO_OUTPUT = 1;
+	private static final int STAGE_DONE = 2;
+	
+	private int state_ = STAGE_NO_INPUT;
 	private Image inputImage_;
 	private Image outputImage_;
 	
@@ -66,6 +71,7 @@ public class Cloudwatcher extends JFrame {
 		// Set JFrame properties
 		this.setTitle("Cloudwatcher 2014");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setResizable(false);
 		
 		// Set up panels
 		panel_ = new JPanel(new BorderLayout());
@@ -78,8 +84,8 @@ public class Cloudwatcher extends JFrame {
 		outputIcon_ = new ImageIcon();
 		inputLabel_ = new JLabel(inputIcon_);
 		outputLabel_ = new JLabel(outputIcon_);
-		inputTextLabel_ = new JLabel("Input image", JLabel.CENTER);
-		outputTextLabel_ = new JLabel("Output image", JLabel.CENTER);
+		inputTextLabel_ = new JLabel("Clouds", JLabel.CENTER);
+		outputTextLabel_ = new JLabel("Looks like...", JLabel.CENTER);
 		middleLabel_ = new JLabel("=>", JLabel.CENTER);
 		
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -109,25 +115,22 @@ public class Cloudwatcher extends JFrame {
 		upperPanel_.add(middleLabel_);
 		
 		// Set up lower panel
-		convertButton_ = new JButton("Imagine");
+		convertButton_ = new JButton();
 		convertButton_.setMnemonic(KeyEvent.VK_I);
 		convertButton_.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			Image i = convert();
-				outputIcon_.setImage(i);
-				// Force the label to resize, repaint it, and pack it so it resizes correctly
-				outputLabel_.setSize(outputLabel_.getPreferredSize());
-				Cloudwatcher.this.repaint();
-				Cloudwatcher.this.setMinimumSize(Cloudwatcher.this.getPreferredSize());
-				Cloudwatcher.this.pack();
+				Image i = Cloudwatcher.this.convert();
+				Cloudwatcher.this.outputImage_ = i;
+				Cloudwatcher.this.state_ = Cloudwatcher.STAGE_DONE;
+				Cloudwatcher.this.redrawAndPackProperly();
 			}
 		});
 		
 		lowerPanel_.add(convertButton_);
 		
 		// Put the panels together
-		panel_.add(upperPanel_, BorderLayout.NORTH);
+		panel_.add(upperPanel_, BorderLayout.CENTER);
 		panel_.add(lowerPanel_, BorderLayout.SOUTH);
 		this.add(panel_);
 		
@@ -140,12 +143,21 @@ public class Cloudwatcher extends JFrame {
 		
 		menuFileOpenImage_ = new JMenuItem("Open...");
 		menuFileOpenImage_.setMnemonic(KeyEvent.VK_O);
+		menuFileOpenImage_.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		menuFileOpenImage_.addActionListener(new ActionListener() {
-			@Override public void actionPerformed(ActionEvent e) { fileOpen(); }
+			@Override public void actionPerformed(ActionEvent e) {
+				Image i = Cloudwatcher.this.openImageFile();
+				if (i != null) {
+					Cloudwatcher.this.inputImage_ = i;
+					Cloudwatcher.this.state_ = Cloudwatcher.STAGE_NO_OUTPUT;
+					redrawAndPackProperly();
+				}
+			}
 		});
 		
 		menuFileExit_ = new JMenuItem("Exit");
 		menuFileExit_.setMnemonic(KeyEvent.VK_E);
+		menuFileExit_.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		menuFileExit_.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) { System.exit(0); }
 		});
@@ -158,46 +170,104 @@ public class Cloudwatcher extends JFrame {
 		
 		
 		// Set up the file chooser
-		openImageChooser_ = new JFileChooser("D:/Dropbox/");
+		openImageChooser_ = new JFileChooser("cloudImages");
 		openImageChooser_.setName("Open...");
-		
-		
-		// Set up keyboard shortcuts
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+		openImageChooser_.setFileFilter(new FileFilter() {
+			@Override public String getDescription() { return "Images"; }
+
 			@Override
-			public boolean dispatchKeyEvent(KeyEvent e) {
-				if (e.getID() == KeyEvent.KEY_PRESSED && 
-					e.getKeyCode() == KeyEvent.VK_O &&
-					e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
-					fileOpen();
+			public boolean accept(File file) {
+				if (file.isDirectory())
 					return true;
-				}
-				return false;
+				
+				String name = file.getName();
+				int extPoint = name.indexOf('.');
+				if (extPoint >= 0 && extPoint < name.length() - 1) {
+					String ext = name.substring(extPoint+1).toLowerCase();
+					return ext.equals("bmp") ||
+						   ext.equals("gif") ||
+						   ext.equals("jpeg") ||
+						   ext.equals("jpg")||
+						   ext.equals("bmp");
+				} else
+					return false;
 			}
 		});
 		
 		
 		// Put some placeholder images in
-		inputIcon_.setImage(outputImage_);
+		inputIcon_.setImage(inputImage_);
 		outputIcon_.setImage(outputImage_);
 		
-		this.pack();
-		this.setMinimumSize(this.getPreferredSize());
+		redrawAndPackProperly();
 		this.setVisible(true);
 	}
 	
-	private void fileOpen() {
-		if (openImageChooser_.showDialog(Cloudwatcher.this, "Choose") == JFileChooser.APPROVE_OPTION) {
+	private void redrawAndPackProperly() {
+		Dimension dim1;
+		Dimension dim2;
+		dim1 = dim2 = new Dimension(160, 100);
+
+		switch (state_) {
+			case STAGE_NO_INPUT:
+				inputLabel_.setIcon(null);
+				inputLabel_.setText("Select an image");
+				outputLabel_.setIcon(null);
+				outputLabel_.setText("Waiting for input");
+				convertButton_.setText("Waiting for input");
+				convertButton_.setEnabled(false);
+				break;
+				
+			case STAGE_NO_OUTPUT:
+				inputIcon_.setImage(inputImage_);
+				inputLabel_.setText("");
+				inputLabel_.setIcon(inputIcon_);
+				outputLabel_.setIcon(null);
+				outputLabel_.setText("Prepare to IMAGINE");
+				dim1 = inputLabel_.getMinimumSize();
+				convertButton_.setText("Imagine");
+				convertButton_.setEnabled(true);
+				break;
+				
+			case STAGE_DONE:
+				inputIcon_.setImage(inputImage_);
+				inputLabel_.setText("");
+				inputLabel_.setIcon(inputIcon_);
+				outputIcon_.setImage(outputImage_);
+				outputLabel_.setText("");
+				outputLabel_.setIcon(outputIcon_);
+				dim1 = inputLabel_.getMinimumSize();
+				dim2 = outputLabel_.getMinimumSize();
+				convertButton_.setText("Done!");
+				convertButton_.setEnabled(false);
+				break;
+
+			default:
+				break;
+		}
+
+		Dimension maxDim = new Dimension(Math.max(dim1.width, dim2.width), Math.max(dim1.height, dim2.height));
+		inputLabel_.setPreferredSize(maxDim);
+		outputLabel_.setPreferredSize(maxDim);
+
+		Cloudwatcher.this.repaint();
+		Cloudwatcher.this.setMinimumSize(Cloudwatcher.this.getPreferredSize());
+		Cloudwatcher.this.pack();
+	}
+	
+	private Image openImageFile() {
+		if (openImageChooser_.showDialog(Cloudwatcher.this, "Open") == JFileChooser.APPROVE_OPTION) {
 			File file = openImageChooser_.getSelectedFile();
 			try {
 				Image image = ImageIO.read(file);
 				if (image == null)
-					throw new IOException("Not a valid image file (image was null)");
-				outputImage_ = image;
+					throw new IOException("The selected file was not a valid image file.");
+				return image;
 			} catch (IOException e) {
-				System.out.println("error:" + e.toString());
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
+		return null;
 	}
 	
 	private Image convert() {
