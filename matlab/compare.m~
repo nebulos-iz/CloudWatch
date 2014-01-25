@@ -5,8 +5,6 @@ BW2 = imrotate(BW2, rotate);
 diff_x = x2 - x1;
 diff_rows = (size(BW2, 1) - y2) - (size(BW1,1) - y1);
 
-
-%put the centroids at the same point
 if(diff_x < 0)
     %need to pad BW2
     pad = zeros(size(BW2,1), diff_x);
@@ -21,9 +19,9 @@ if(diff_rows < 0)
     vertcat(pad, BW2);
 else
     pad = zeros(size(BW1,2), diff_rows);
-    vertcat(pad, BW1);
+    vertcat(pad, BW2);
 end
 
-
+BW2 = 
 
 end
