@@ -1,4 +1,4 @@
-function [matches] = match_outlines(cloud_outline, objects)
+function [matches] = match_outlines(cloud_outline)
 
 % addpath(genpath('~/Documents/MATLAB/LabelMeToolbox')); 
 % 
@@ -10,18 +10,36 @@ function [matches] = match_outlines(cloud_outline, objects)
 
 path = '/home/emily/Documents/MATLAB/1obj/';
 
-files = dir(path);
+files = dir(path)
 
 confidences = zeros([100]);
 counter = 1;
 
-for file = files'
-    fir = dir(file.name);
-    image = imread(fir(1).name);
-    red = image(:,1);
+for folder = files'
+    %file random folder name
+    if (folder.name(1) == '.') 
+        continue; 
+    end
+    folder_name = strcat(path, folder.name); 
+    name_file = dir(strcat(folder_name, '/*.name'));
+    name = name_file.name;
+    imgs = dir(strcat(folder_name, '/human_seg/*.png')); 
+    image = imread(strcat(folder_name, '/human_seg/', imgs(1).name));
+    imshow(image); 
+    
+    red = image(:, :,1); 
+    find(red
     mask = im2bw(red, 1);
     
     
+    
+    [row_size, cols_size, ~] = size(mask);
+    if(row_size/col_size > 1.1)
+        mask = imcrop(mask, [0, 0, col_size, col_size]);
+    elseif(row_size/col_size < .9)
+        mask = imcrop(mask, [0, 0, row_size, row_size]);
+    end
+    mask = imresize(mask, [300, 300]);
     
     counter = counter +1;
 end
