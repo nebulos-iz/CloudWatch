@@ -10,7 +10,7 @@ cloud_outline = cloud_to_outline(cloud_img);
 %% read dataset, find closest matches
 
 fprintf('Comparing cloud to dataset...\n'); 
-[matches, img_path] = match_outlines(cloud_outline); 
+img_path = match_outlines(cloud_outline);
 
 
 end

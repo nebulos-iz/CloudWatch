@@ -1,4 +1,4 @@
-function [match, img_path] = match_outlines(cloud_outline)
+function img_path = match_outlines(cloud_outline)
 
 % addpath(genpath('~/Documents/MATLAB/LabelMeToolbox')); 
 % 
@@ -49,15 +49,15 @@ end
 
 [B, IX] = sort(confidences, 'descend');
 
-conf = confidences(IX(1))
-figure(1); 
-
-imshow(clouds{IX(1)}); 
-figure(2); 
-imshow(objs{IX(1)}); 
-figure(3); 
-imshow(colors{IX(1)}); 
-match = colors{IX(1)}; 
+conf = confidences(IX(1));
+% figure(1); 
+% 
+% imshow(clouds{IX(1)}); 
+% figure(2); 
+% imshow(objs{IX(1)}); 
+% figure(3); 
+% imshow(colors{IX(1)}); 
+% match = colors{IX(1)}; 
 
 img_path = '/home/emily/Documents/HackAtBrown2014/cloudImages/bestMatch.jpg';
 imwrite(colors{IX(1)}, img_path); 

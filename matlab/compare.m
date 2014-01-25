@@ -9,8 +9,6 @@ function [confidence, BW1new, BW2new, colornew] = compare(BW1, BW2, color)
 rotate = orient2 - orient1;
 BW2 = imrotate(BW2, rotate);
 color2 = imrotate(color, rotate);
-imshow(color2)
-pause();
 
 BW1 = center(BW1, x1, y1); 
 BW2 = center(BW2, x2, y2);

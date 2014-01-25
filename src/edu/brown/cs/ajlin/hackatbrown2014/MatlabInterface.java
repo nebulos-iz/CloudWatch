@@ -15,10 +15,11 @@ public class MatlabInterface {
 	}
 	
 	public String cloudwatch(String cloudPath) throws MatlabInvocationException {
+		proxy_.eval("cd matlab"); 
 		proxy_.eval("j_cloudwatch_ret = cloudWatch('" + cloudPath + "')");
 		Object retval = proxy_.getVariable("j_cloudwatch_ret");
-		System.out.println(retval.getClass());
-		return "assets/testimage.jpg";
+		String outfile = (String) retval;
+		return outfile;
 	}
 	
 }
