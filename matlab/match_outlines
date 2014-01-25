@@ -1,0 +1,3 @@
+function [matches] = match_outlines(cloud_outline)
+
+end 

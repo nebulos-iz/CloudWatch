@@ -1,0 +1,30 @@
+function [matches] = match_outlines(cloud_outline, objects)
+
+% addpath(genpath('~/Documents/MATLAB/LabelMeToolbox')); 
+% 
+% HOMEIMAGES = '/home/emily/Documents/MATLAB/LabelMe/Images';
+% HOMEANNOTATIONS = '/home/emily/Documents/MATLAB/LabelMe/Annotations';
+% LMinstall (HOMEIMAGES, HOMEANNOTATIONS);
+% 
+% D = LMDatabase(HOMEANNOTATIONS);
+
+path = '/home/emily/Documents/MATLAB/1obj/';
+
+files = dir(path);
+
+confidences = zeros([100]);
+counter = 1;
+
+for file = files'
+    fir = dir(file.name);
+    image = imread(fir(1).name);
+    red = image(:,1);
+    mask = im2bw(red, 1);
+    
+    
+    
+    counter = counter +1;
+end
+
+
+end 

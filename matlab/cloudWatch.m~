@@ -1,0 +1,26 @@
+function [matches] = cloud_watch( cloud_img)
+%% make cloud into one map of one cloud/not cloud
+
+cloud_outline = cloud_to_outline(cloud_img); 
+
+
+
+
+%% read dataset, find closest matches
+objects = {
+counter = 1;
+
+path = '/home/emily/Documents/MATLAB/1obj/';
+
+files = dir(path);
+for file = files'
+    objects(counter, 1) = imread
+    counter = counter + 1;
+end
+
+
+[matches] = match_outlines(cloud_outline, objects); 
+
+
+end
+
