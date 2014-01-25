@@ -12,37 +12,46 @@ path = '/home/emily/Documents/MATLAB/1obj/';
 
 files = dir(path)
 
-confidences = zeros([100]);
+
 counter = 1;
+confidences = []; 
+clouds = []; 
+objs = []; 
+colors = []; 
+
 
 for folder = files'
     %file random folder name
     if (folder.name(1) == '.') 
-        continue; 
+        continue;  
     end
-    folder_name = strcat(path, folder.name); 
+    folder_name = strcat(path, folder.name);
     name_file = dir(strcat(folder_name, '/*.name'));
     name = name_file.name;
     imgs = dir(strcat(folder_name, '/human_seg/*.png')); 
     image = imread(strcat(folder_name, '/human_seg/', imgs(1).name));
+    color_dir= dir(strcat(folder_name, '/src_color/*.png')); 
+    color_img = imread(strcat(folder_name, '/src_color/', color_dir.name)); 
+    pause
     imshow(image); 
     
-    red = image(:, :,1); 
-    find(red
-    mask = im2bw(red, 1);
+    mask = image(:, :, 1) == 255 & image(:, :, 2) == 0 & image(:, :, 3) == 0;
+    imshow(mask)
     
+    [confidence, cloud_new, obj_new, color_new] = compare(cloud_outline, obj_outline, color_img); 
     
+    confidences(counter) = confidence; 
+    clouds(:, :, counter) = cloud_new; 
+    objs(:, :, counter) = obj_new; 
+    colors(:, :, counter) = color_new; 
     
-    [row_size, cols_size, ~] = size(mask);
-    if(row_size/col_size > 1.1)
-        mask = imcrop(mask, [0, 0, col_size, col_size]);
-    elseif(row_size/col_size < .9)
-        mask = imcrop(mask, [0, 0, row_size, row_size]);
-    end
-    mask = imresize(mask, [300, 300]);
-    
-    counter = counter +1;
+    counter = counter+1; 
 end
+
+[B, IX] = sort(confidences); 
+confidences(IX(1))
+figure(1); 
+imshow(clouds(:, :, 
 
 
 end 

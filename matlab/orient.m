@@ -1,8 +1,10 @@
 function [x,y,angle] = orient(BW)
-STATS = BW.regionprops('Area', 'Centroid', 'Orientation');
+STATS = regionprops(BW, 'Area', 'Centroid', 'Orientation');
 [length] = size(STATS);
 
-orientation, center_x, center_y = 0;
+orientation = 0; 
+center_x = 0; 
+center_y = 0;
 total_area = bwarea(BW);
 
 for i = 1:length
@@ -11,8 +13,8 @@ for i = 1:length
     orientation = orientation + (STATS(i).Orientation*STATS(i).Area / total_area);
 end
 
-x = center_x;
-y = center_y;
+x = floor(center_x);
+y = floor(center_y);
 angle = orientation;
 
 end

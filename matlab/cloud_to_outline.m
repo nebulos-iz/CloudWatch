@@ -15,10 +15,9 @@ elseif(row_size/col_size < .9)
 end
 orig_image = imresize(orig_image, [300, 300]);
 
-figure, imshow(orig_image);
-title('fig1');
+fin_image = orig_image;
 
-fin_image = max_suppr(orig_image);
+%fin_image = max_suppr(orig_image);
 
 
 
