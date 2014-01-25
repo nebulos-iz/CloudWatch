@@ -1,5 +1,5 @@
-function [x,y,angle, BW2] = orient(BW)
-STATS = BW.regionprops('Area', 'Centroid', 'Orientation', 'FilledImage');
+function [x,y,angle] = orient(BW)
+STATS = BW.regionprops('Area', 'Centroid', 'Orientation');
 [length] = size(STATS);
 
 orientation, center_x, center_y = 0;
@@ -14,6 +14,5 @@ end
 x = center_x;
 y = center_y;
 angle = orientation;
-BW2 = STATS.FilledImage;
 
 end
