@@ -27,13 +27,19 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import matlabcontrol.MatlabConnectionException;
+import matlabcontrol.MatlabInvocationException;
+
 public class Cloudwatcher extends JFrame {
 	
 	private static final int STAGE_NO_INPUT = 0;
 	private static final int STAGE_NO_OUTPUT = 1;
 	private static final int STAGE_DONE = 2;
 	
+	private MatlabInterface matlab_;
+
 	private int state_ = STAGE_NO_INPUT;
+	private String imagePath_;
 	private Image inputImage_;
 	private Image outputImage_;
 	
@@ -195,10 +201,16 @@ public class Cloudwatcher extends JFrame {
 		});
 		
 		
-		// Put some placeholder images in
-		inputIcon_.setImage(inputImage_);
-		outputIcon_.setImage(outputImage_);
+		// Run matlab
+		try {
+			matlab_ = new MatlabInterface();
+		} catch (MatlabConnectionException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
 		
+		
+		// GO!
 		redrawAndPackProperly();
 		this.setVisible(true);
 	}
@@ -262,6 +274,7 @@ public class Cloudwatcher extends JFrame {
 				Image image = ImageIO.read(file);
 				if (image == null)
 					throw new IOException("The selected file was not a valid image file.");
+				imagePath_ = file.getAbsolutePath();
 				return image;
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -271,6 +284,13 @@ public class Cloudwatcher extends JFrame {
 	}
 	
 	private Image convert() {
+		try {
+			String path = matlab_.cloudwatch(imagePath_);
+			Image image = ImageIO.read(new File(path));
+			return image;
+		} catch (MatlabInvocationException | IOException e) {
+			e.printStackTrace();
+		}
 		return outputImage_;
 	}
 
