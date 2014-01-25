@@ -9,10 +9,12 @@ function [confidence, BW1new, BW2new, colornew] = compare(BW1, BW2, color)
 rotate = orient2 - orient1;
 BW2 = imrotate(BW2, rotate);
 color2 = imrotate(color, rotate);
+imshow(color2)
+pause();
 
 BW1 = center(BW1, x1, y1); 
 BW2 = center(BW2, x2, y2);
-color2 = center(color, x2, y2);
+color2 = center(color2, x2, y2);
 
 [rows1, cols1] = size(BW1);
 [rows2, cols2] = size(BW2);
@@ -40,7 +42,7 @@ end
 old_confidence = 0;
 BW1new = BW1; 
 BW2new = BW2; 
-colornew = color; 
+colornew = color2; 
 
 for i = 1:5
     BWsize = size(BW2);
