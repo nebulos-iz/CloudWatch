@@ -34,14 +34,33 @@ else
     color2 = padarray(color2, [diff_cols/2 0]);
 end
 
-comp = BW2 + BW1;
-right = find(comp == 2);
-wrong = find(comp == 1);
+old_confidence = 0;
 
-confidence = right/wrong;
-BW1new = BW1;
-BW2new = BW2;
-colornew = color2;
+for i = 1:5
+    BWsize = size(BW2);
+    scale = BWsize * .9;
+    pad = (BWsize - scale)/2;
+    
+    BW2 = imresize(BW2, scale, 'bilinear');
+    color2 = imresize(color2, scale, 'bilinear');
+    
+    BW2 = padarray(BW2, pad);
+    color2 = padarray(color2, pad);
+    
+    comp = BW2 + BW1;
+    right = find(comp == 2);
+    wrong = find(comp == 1);
+    
+    confidence = right/wrong;
+    if(confidence > old_confidence)
+        old_confidence = confidence;
+        BW1new = BW1;
+        BW2new = BW2;
+        colornew = color2;
+    end
+end
+
+confidence = old_confidence;
 
 end
 
