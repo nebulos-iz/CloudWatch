@@ -23,7 +23,10 @@ for folder = files'
     if (folder.name(1) == '.') 
         continue;  
     end
+<<<<<<< HEAD
     
+=======
+>>>>>>> 03e2593faa20c7c2e3a3f329ab20fc9832f897a6
     folder_name = strcat(path, folder.name);
     name_file = dir(strcat(folder_name, '/*.name'));
     name = name_file.name;
