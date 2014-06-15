@@ -1,2 +1,4 @@
-HackAtBrown2014
+CloudWatch
 ===============
+
+Teaching computers to watch clouds. 
